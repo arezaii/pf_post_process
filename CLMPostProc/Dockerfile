@@ -1,6 +1,6 @@
 FROM hydroframe/fortranpython
 
-COPY Scripts/ /testing/
+COPY CLMPostProc/Scripts/ /testing/
 
 WORKDIR /testing/
 
