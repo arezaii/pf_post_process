@@ -1,27 +1,22 @@
 FROM centos:7
 
-RUN yum -y install epel-release && yum clean all
-RUN yum -y install python-pip && yum clean all
+RUN yum -y install epel-release && yum clean all && \
+	yum -y install python-pip && yum clean all && \
+	yum update -y && \
+	yum install -y gcc-gfortran gdb make && \
+	yum install -y python-devel && \
+	pip install numpy
 
-# start by building the basic container
-MAINTAINER Lauren Thatch <lmthatch@mines.edu>
-RUN yum update -y
-# add gfortran, debugging tools and make
-RUN yum install -y gcc-gfortran gdb make 
+RUN yum install -y https://files.renci.org/pub/irods/releases/4.1.10/centos7/irods-icommands-4.1.10-centos7-x86_64.rpm
 
-RUN yum install -y python-devel
 
-RUN pip install numpy
+# && \
+#	yum install https://files.renci.org/pub/irods/releases/4.1.10/centos6/irods-icommands-4.1.10-centos6-x86_64.rpm
 
-#COPY primes.f95 /testing/
-#COPY pfb_read.f90 /testing/
-#COPY primes.so /testing/
-#COPY checkme.py /testing/
 COPY Scripts/ /testing/
-
-
 
 WORKDIR /testing/
 
-#CMD f2py -c primes.f95 pfb_read.f90 -m primes
-#CMD python checkme.py
+#CMD python -m numpy.f2py -c primes.f95 pfb_read.f90 -m primes
+
+CMD python checkme.py
