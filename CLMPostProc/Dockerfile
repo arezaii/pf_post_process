@@ -5,6 +5,7 @@ RUN yum -y install epel-release && yum clean all && \
 	yum update -y && \
 	yum install -y gcc-gfortran gdb make && \
 	yum install -y python-devel && \
+	pip install pip --upgrade && \
 	pip install numpy
 
 RUN yum install -y https://files.renci.org/pub/irods/releases/4.1.10/centos7/irods-icommands-4.1.10-centos7-x86_64.rpm
@@ -17,6 +18,6 @@ COPY Scripts/ /testing/
 
 WORKDIR /testing/
 
-#CMD python -m numpy.f2py -c primes.f95 pfb_read.f90 -m primes
+CMD python -m numpy.f2py -c primes.f95 pfb_read.f90 -m primes
 
 CMD python checkme.py
