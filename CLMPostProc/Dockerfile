@@ -18,6 +18,8 @@ COPY Scripts/ /testing/
 
 WORKDIR /testing/
 
-CMD python -m numpy.f2py -c primes.f95 pfb_read.f90 -m primes
+RUN python -m numpy.f2py -c primes.f95 pfb_read.f90 -m primes
+
+#CMD ls
 
 CMD python checkme.py
