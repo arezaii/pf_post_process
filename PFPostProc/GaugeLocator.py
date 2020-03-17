@@ -190,6 +190,7 @@ def generate_flow_at_gauges(pf_outputs, out_dir, start_date=None):
 def main():
     # parse the command line arguments
     args = parse_args(sys.argv[1:])
+    # make csv files for each gauge site
     generate_flow_at_gauges(args.pf_outputs, args.out_dir, args.start_date)
 
 
