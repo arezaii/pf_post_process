@@ -6,7 +6,9 @@ import argparse
 import sys
 import glob
 import numpy as np
+import matplotlib.pyplot as plt
 
+plt.rcParams.update({'figure.max_open_warning': 0})
 GAUGES_FILE = 'CONUS_AllStations_Summary_FIXED_stats.Run4P.csv'
 RESOLUTION = 1000.0
 MANNINGS = 5.52e-6
@@ -41,7 +43,10 @@ def parse_args(args):
 
     parser.add_argument("--start_date", "-s", dest="start_date", required=False,
                         type=lambda x: datetime.datetime.strptime(x, '%m-%d-%Y'),
-                        help="the starting date for the simulation", )
+                        help="the starting date for the simulation" )
+
+    parser.add_argument('--print_png', '-p', dest='print_png', required=False,
+                        default=False, help='print hydrographs to png files')
 
     return parser.parse_args(args)
 
@@ -135,14 +140,7 @@ def calculate_flow_data(gauges_in_mask, pressure_files):
     return flow_data.fillna(0)
 
 
-def write_flows_to_csv(flow_data, out_dir):
-    # filter and write outputs to individual csv files
-    for name, group in flow_data.filter(['STAID', 'STANAME', 'timestep', 'flow_cms', 'flow_cfs',
-                                         'mapped_i', 'mapped_j', 'pressure', 'slope']).groupby('STAID'):
-        group.to_csv(os.path.join(out_dir, '{}.csv'.format(name)), index=False, sep='\t')
-
-
-def get_flow_at_gauges(pf_outputs, out_dir, start_date=None):
+def get_flow_at_gauges(pf_outputs, start_date=None):
     # make sure we have a pftcl file in the outputs directory
     pftcl_file = find_pftcl_file(pf_outputs)
     # parse the pftcl file's path and name to identify the ParFlow runname
@@ -181,17 +179,40 @@ def get_flow_at_gauges(pf_outputs, out_dir, start_date=None):
         return flow_data
 
 
-def generate_flow_at_gauges(pf_outputs, out_dir, start_date=None):
-        flow_data = get_flow_at_gauges(pf_outputs, out_dir, start_date)
+def write_flows_to_csv(flow_data, out_dir):
+    # filter and write outputs to individual csv files
+    for name, group in flow_data.filter(['STAID', 'STANAME', 'timestep', 'flow_cms', 'flow_cfs',
+                                         'mapped_i', 'mapped_j', 'pressure', 'slope']).groupby(['STAID', 'STANAME']):
+        group.to_csv(os.path.join(out_dir, f'Gauge_#{name[0]}_{name[1]}'), index=False, sep='\t')
+
+
+def write_hydrographs_to_png(flow_data, out_dir):
+    # filter and write hydrographs to png files
+    for name, group in flow_data.filter(['STAID', 'STANAME', 'timestep', 'flow_cms',
+                                         'flow_cfs']).groupby(['STAID', 'STANAME']):
+        title = f'Gauge_#{name[0]}_{name[1]}'
+        graph = group.plot(x='timestep', y='flow_cfs', kind='line', figsize=(16, 8),
+                             title=title, label='ParFlow Simulated Flow')
+        graph.set_ylabel('CFS')
+        fig = graph.get_figure()
+        fig.savefig(os.path.join(out_dir, f'{graph.get_title()}.png'))
+        fig.clf()
+
+
+def generate_flow_at_gauges(pf_outputs, out_dir, start_date=None, print_png=False):
+        flow_data = get_flow_at_gauges(pf_outputs, start_date)
         if flow_data is not None:
             write_flows_to_csv(flow_data, out_dir)
+            if print_png:
+                write_hydrographs_to_png(flow_data, out_dir)
+        return flow_data
 
 
 def main():
     # parse the command line arguments
     args = parse_args(sys.argv[1:])
     # make csv files for each gauge site
-    generate_flow_at_gauges(args.pf_outputs, args.out_dir, args.start_date)
+    generate_flow_at_gauges(args.pf_outputs, args.out_dir, args.start_date, args.print_png)
 
 
 if __name__ == '__main__':
