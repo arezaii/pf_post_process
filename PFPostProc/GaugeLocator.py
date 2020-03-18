@@ -183,7 +183,7 @@ def write_flows_to_csv(flow_data, out_dir):
     # filter and write outputs to individual csv files
     for name, group in flow_data.filter(['STAID', 'STANAME', 'timestep', 'flow_cms', 'flow_cfs',
                                          'mapped_i', 'mapped_j', 'pressure', 'slope']).groupby(['STAID', 'STANAME']):
-        group.to_csv(os.path.join(out_dir, f'Gauge_#{name[0]}_{name[1]}'), index=False, sep='\t')
+        group.to_csv(os.path.join(out_dir, f'Gauge_#{name[0]}_{name[1]}.csv'), index=False, sep='\t')
 
 
 def write_hydrographs_to_png(flow_data, out_dir):
@@ -196,7 +196,6 @@ def write_hydrographs_to_png(flow_data, out_dir):
         graph.set_ylabel('CFS')
         fig = graph.get_figure()
         fig.savefig(os.path.join(out_dir, f'{graph.get_title()}.png'))
-        fig.clf()
 
 
 def generate_flow_at_gauges(pf_outputs, out_dir, start_date=None, print_png=False):
