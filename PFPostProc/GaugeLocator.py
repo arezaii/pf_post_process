@@ -190,19 +190,20 @@ def write_flows_to_csv(flow_data, out_dir):
     # filter and write outputs to individual csv files
     for name, group in flow_data.filter(['STAID', 'STANAME', 'timestep', 'flow_cms', 'flow_cfs',
                                          'mapped_i', 'mapped_j', 'pressure', 'slope']).groupby(['STAID', 'STANAME']):
-        group.to_csv(os.path.join(out_dir, f'Gauge_#{name[0]}_{name[1]}.csv'), index=False, sep='\t')
+        group.to_csv(os.path.join(out_dir, f'Gauge_{name[0]}_{name[1].replace(" ","_")}.csv'), index=False, sep='\t')
 
 
 def write_hydrographs_to_png(flow_data, out_dir):
     # filter and write hydrographs to png files
     for name, group in flow_data.filter(['STAID', 'STANAME', 'timestep', 'flow_cms',
                                          'flow_cfs']).groupby(['STAID', 'STANAME']):
-        title = f'Gauge_#{name[0]}_{name[1]}'
+        title = f'Gauge_{name[0]}_{name[1]}'
         graph = group.plot(x='timestep', y='flow_cfs', kind='line', figsize=(16, 8),
                              title=title, label='ParFlow Simulated Flow')
         graph.set_ylabel('CFS')
         fig = graph.get_figure()
-        fig.savefig(os.path.join(out_dir, f'{graph.get_title()}.png'))
+        fig.savefig(os.path.join(out_dir, f'{graph.get_title().replace(" " ,"_")}.png'))
+
 
 
 def generate_flow_at_gauges(pf_outputs, out_dir, start_date=None, print_png=False):
