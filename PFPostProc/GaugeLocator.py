@@ -51,6 +51,13 @@ def parse_args(args):
     return parser.parse_args(args)
 
 
+def make_output_subdir(out_dir, subdir):
+    subdir_path = os.path.join(out_dir, subdir)
+    if not os.path.isdir(subdir_path):
+        os.mkdir(subdir_path)
+    return subdir_path
+
+
 def find_pftcl_file(pf_outputs):
     pftcl_file = glob.glob(os.path.join(pf_outputs, '*.out.pftcl'))
     if len(pftcl_file) != 1:
@@ -201,9 +208,11 @@ def write_hydrographs_to_png(flow_data, out_dir):
 def generate_flow_at_gauges(pf_outputs, out_dir, start_date=None, print_png=False):
         flow_data = get_flow_at_gauges(pf_outputs, start_date)
         if flow_data is not None:
-            write_flows_to_csv(flow_data, out_dir)
+            csv_path = make_output_subdir(out_dir, 'csv')
+            write_flows_to_csv(flow_data, csv_path)
             if print_png:
-                write_hydrographs_to_png(flow_data, out_dir)
+                png_path = make_output_subdir(out_dir, 'png')
+                write_hydrographs_to_png(flow_data, png_path)
         return flow_data
 
 
