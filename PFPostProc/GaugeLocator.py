@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 plt.rcParams.update({'figure.max_open_warning': 0})
-GAUGES_FILE = 'CONUS_AllStations_Summary_FIXED_stats.Run4P.csv'
+GAUGES_FILE = 'CONUS1_to_USGS.csv'
 RESOLUTION = 1000.0
 MANNINGS = 5.52e-6
 RM = (RESOLUTION / MANNINGS)
