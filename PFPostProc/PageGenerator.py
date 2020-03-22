@@ -28,7 +28,7 @@ def parse_args(args):
                         help="path to the png files to display",
                         type=lambda x: is_valid_path(parser, x))
 
-    parser.add_argument("--out_file_name", "-n", dest="out_file", required=True,
+    parser.add_argument("--out_file_name", "-n", dest="out_file", required=False,
                         help="path and name of the page to generate")
 
     parser.add_argument("--zip_file", "-z", dest="zip_file", required=True,
@@ -67,9 +67,11 @@ def main():
     pngs = get_pngs(args.png_dir)
     doc, tag, text, line = Doc().ttl()
     html = make_page(doc, tag, text, line, pngs, args.zip_file)
-    print(html)
-    #page = open(args.out_file, 'w')
-    #page.write(html)
+    if args.out_file is None:
+        print(html)
+    else:
+        page = open(args.out_file, 'w')
+        page.write(html)
 
 
 if __name__ == '__main__':
