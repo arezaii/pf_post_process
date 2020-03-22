@@ -4,6 +4,8 @@ import glob
 import sys
 from yattag import Doc, indent
 
+DOCUMENT_ROOT='/home/arezaii/git/'
+
 
 def is_valid_path(parser, arg):
     if not os.path.isdir(arg):
@@ -20,7 +22,7 @@ def is_valid_file(parser, arg):
 
 
 def parse_args(args):
-    parser = argparse.ArgumentParser('Extract the flow data from a list of gauge sites and a domain')
+    parser = argparse.ArgumentParser('Generate a webpage to display hydrograph results')
 
     parser.add_argument("--png_dir", "-d", dest="png_dir", required=True,
                         help="path to the png files to display",
@@ -50,7 +52,7 @@ def make_page(doc, tag, text, line, pngs, download_path):
             with tag('div', id='photo-container'):
                 # write each png
                 for png in pngs:
-                    doc.stag('img', src=png, klass="photo")
+                    doc.stag('img', src=os.path.relpath(png,start=DOCUMENT_ROOT), klass="photo")
 
     return indent(doc.getvalue())
 
@@ -65,8 +67,9 @@ def main():
     pngs = get_pngs(args.png_dir)
     doc, tag, text, line = Doc().ttl()
     html = make_page(doc, tag, text, line, pngs, args.zip_file)
-    page = open(args.out_file, 'w')
-    page.write(html)
+    print(html)
+    #page = open(args.out_file, 'w')
+    #page.write(html)
 
 
 if __name__ == '__main__':
