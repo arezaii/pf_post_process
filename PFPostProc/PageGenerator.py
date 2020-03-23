@@ -45,16 +45,21 @@ def make_page(doc, tag, text, line, pngs, download_path):
                 text('Hydrographs')
 
             with tag('div', id='download-container'):
-                with tag('form', method='get', action=os.path.relpath(download_path, start=DOCUMENT_ROOT)):
+                with tag('form', method='get', action=get_rel_path(download_path)):
                     with tag('button', type='submit'):
                         text('Download this data')
 
             with tag('div', id='photo-container'):
                 # write each png
                 for png in pngs:
-                    doc.stag('img', src=os.path.relpath(png, start=DOCUMENT_ROOT), klass="photo")
+                    doc.stag('img', src=get_rel_path(png), klass="photo")
 
     return indent(doc.getvalue())
+
+
+def get_rel_path(path):
+    if path.startswith(DOCUMENT_ROOT):
+        return path[len(DOCUMENT_ROOT):]
 
 
 # get all the png files from the folder
