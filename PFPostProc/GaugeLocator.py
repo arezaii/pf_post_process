@@ -197,7 +197,7 @@ def write_hydrographs_to_png(flow_data, out_dir):
     # filter and write hydrographs to png files
     for name, group in flow_data.filter(['STAID', 'STANAME', 'timestep', 'flow_cms',
                                          'flow_cfs']).groupby(['STAID', 'STANAME']):
-        title = f'Gauge_{name[0]}_{name[1]}'
+        title = f'Gauge {name[0]} {name[1]}'
         graph = group.plot(x='timestep', y='flow_cfs', kind='line', figsize=(16, 8),
                              title=title, label='ParFlow Simulated Flow')
         graph.set_ylabel('CFS')
