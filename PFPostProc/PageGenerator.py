@@ -4,7 +4,7 @@ import glob
 import sys
 from yattag import Doc, indent
 
-DOCUMENT_ROOT='/home/arezaii/git/'
+DOCUMENT_ROOT='/var/www/subset/'
 
 
 def is_valid_path(parser, arg):
@@ -25,8 +25,8 @@ def parse_args(args):
     parser = argparse.ArgumentParser('Generate a webpage to display hydrograph results')
 
     parser.add_argument("--png_dir", "-d", dest="png_dir", required=True,
-                        help="path to the png files to display",
-                        type=lambda x: is_valid_path(parser, x))
+                        help="path to the png files to display")
+                        
 
     parser.add_argument("--out_file_name", "-n", dest="out_file", required=False,
                         help="path and name of the page to generate")
@@ -42,17 +42,23 @@ def make_page(doc, tag, text, line, pngs, download_path):
     with tag('html'):
         with tag('body'):
             with tag('h1'):
-                text('Hydrographs')
+                text('Job Finished!')
 
             with tag('div', id='download-container'):
-                with tag('form', method='get', action=get_rel_path(download_path)):
+                with tag('form', method='get', action=os.path.relpath(download_path,start=DOCUMENT_ROOT)):
                     with tag('button', type='submit'):
                         text('Download this data')
-
-            with tag('div', id='photo-container'):
-                # write each png
-                for png in pngs:
-                    doc.stag('img', src=get_rel_path(png), klass="photo")
+            
+            if len(pngs) > 0:
+                with tag('h2'):
+                    text('Hydrographs')
+                with tag('div', id='photo-container'):
+                    # write each png
+                    for png in pngs:
+                        doc.stag('img', src=os.path.relpath(png,start=DOCUMENT_ROOT), klass="photo")
+            else:
+                with tag('p'):
+                    text('This subset did not produce any hydrographs at known USGS locations.')
 
     return indent(doc.getvalue())
 
@@ -81,3 +87,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
