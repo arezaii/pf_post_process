@@ -59,6 +59,9 @@ def make_page(doc, tag, text, line, pngs, download_path):
             else:
                 with tag('p'):
                     text('This subset did not produce any hydrographs at known USGS locations.')
+            with tag('div', id='new-subset-container'):
+                with tag('a', href='http://subset.cuahsi.org/parflow/v1_0'):
+                    text('Try another subset')
 
     return indent(doc.getvalue())
 
