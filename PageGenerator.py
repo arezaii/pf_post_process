@@ -64,7 +64,7 @@ def make_page(doc, tag, text, line, pngs, download_path):
                     text('Try another subset')
             with tag('div', id='download-parflow-container'):
                 with tag('p'):
-                    text('You can run this simulation on your own computer! Just download the data using the link above and use the Parflow Docker image.')
+                    text('You can run this simulation on your own computer! Just download the data using the link above and use the ParFlow Docker image.')
                 with tag('a', href='https://github.com/parflow/docker'):
                     text('Download ParFlow Docker')
 
